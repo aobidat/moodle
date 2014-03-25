@@ -42,20 +42,37 @@ class block_messages extends block_base {
         //Now, we have in users, the list of users to show
         //Because they are online
         if (!empty($users)) {
-            $this->content->text .= '<ul class="list">';
-            foreach ($users as $user) {
-                $timeago = format_time(time() - $user->lastaccess);
-                $this->content->text .= '<li class="listentry"><div class="user"><a href="'.$CFG->wwwroot.'/user/view.php?id='.$user->id.'&amp;course='.SITEID.'" title="'.$timeago.'">';
-                $this->content->text .= $OUTPUT->user_picture($user, array('courseid'=>SITEID)); //TODO: user might not have capability to view frontpage profile :-(
-                $this->content->text .= fullname($user).'</a></div>';
-
-                $link = '/message/index.php?usergroup=unread&id='.$user->id;
-                $anchortagcontents = '<img class="iconsmall" src="'.$OUTPUT->pix_url('t/message') . '" alt="" />&nbsp;'.$user->count;
-
-                $action = null; // popup is gone now
-                $anchortag = $OUTPUT->action_link($link, $anchortagcontents, $action);
-
-                $this->content->text .= '<div class="message">'.$anchortag.'</div></li>';
+  $totalnumberofmessages=0;
+   foreach ($users as $user) {
+   $link = '/message/index.php?usergroup=unread&id='.$user->id;
+   $totalnumberofmessages+= $user->count;
+    }
+if ($totalnumberofmessages>1)
+{
+$this->content->text .= '<div align="center">'.get_string('youhave', 'message').$totalnumberofmessages.get_string('morethanonemessage','message').'</div>';
+}
+else
+ {
+$this->content->text .= '<div align="center">'. get_string('youhave', 'message').$totalnumberofmessages.get_string('oneunreadmessage','message').'</div>';
+}
+$this->content->text .= '<ul class="list">';
+foreach ($users as $user) {
+if ($user->count >1)
+{
+$anchortagcontents = $user->count. ' messages' ;
+ }
+else
+{
+$anchortagcontents = $user->count. ' message';
+}
+$action = null; // popup is gone now
+$anchortag = $OUTPUT->action_link($link, $anchortagcontents, $action);
+$timeago = format_time(time() - $user->lastaccess);
+                $this->content->text .= '<li class="listentry">';
+                $this->content->text .= '<div>'.$anchortag;
+                $this->content->text .=' from '.$OUTPUT->user_picture($user, array('courseid'=>SITEID)); //TODO: user might not have capability to view frontpage profile :-(
+                $this->content->text .='<a href="'.$CFG->wwwroot.'/user/view.php?id='.$user->id.'&amp;course='.SITEID.'">'.fullname($user).'</a> whose last access was '.$timeago.' ago</div></li>' ;
+               // $this->content->text .='<a href='. $link.'>'.fullname($user).'</a></div>';
             }
             $this->content->text .= '</ul>';
         } else {

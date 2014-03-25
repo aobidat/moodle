@@ -1190,8 +1190,15 @@ abstract class moodleform {
      * @param bool $cancel whether to show cancel button, default true
      * @param string $submitlabel label for submit button, defaults to get_string('savechanges')
      */
-    function add_action_buttons($cancel = true, $submitlabel=null){
-        if (is_null($submitlabel)){
+    function add_action_buttons($cancel = true, $submitlabel=null, $isitglossary=false, $isitassignment=false){
+	 if ($isitglossary){
+	 $submitlabel = get_string('saveterm');
+    }
+    elseif ($isitassignment)
+    {
+    $submitlabel =get_string('savechangestosubmission');
+    }
+    elseif (is_null($submitlabel)){
             $submitlabel = get_string('savechanges');
         }
         $mform =& $this->_form;
@@ -1685,7 +1692,7 @@ class MoodleQuickForm extends HTML_QuickForm_DHTMLRulesTableless {
                     } else if (($headercounter === 2 && $headerscount === 2) && !isset($this->_collapsibleElements[$headername])) {
                         // The second section is always expanded if the form only contains 2 sections),
                         // except if a state has already been set.
-                        $this->setExpanded($headername, true);
+                        $this->setExpanded($headername, false);
                     }
                 } else if ($anyrequiredorerror) {
                     // If any error or required field are present within the header, we need to expand it.

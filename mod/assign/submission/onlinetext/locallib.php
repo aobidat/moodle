@@ -42,7 +42,7 @@ class assign_submission_onlinetext extends assign_submission_plugin {
      * @return string
      */
     public function get_name() {
-        return get_string('onlinetext', 'assignsubmission_onlinetext');
+        return get_string('onlinetext_help', 'assignsubmission_onlinetext');
     }
 
 

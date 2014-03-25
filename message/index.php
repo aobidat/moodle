@@ -25,6 +25,8 @@
 require_once('../config.php');
 require_once('lib.php');
 require_once('send_form.php');
+require_once('reply_form.php');
+
 
 require_login(0, false);
 
@@ -114,12 +116,15 @@ $user2realuser = !empty($user2) && core_user::is_real_user($user2->id);
 $showactionlinks = $showactionlinks && $user2realuser;
 $systemcontext = context_system::instance();
 
+if (!empty($user2) && $user1->id == $user2->id) {
+    print_error('invaliduserid');
+}
+
 // Is the user involved in the conversation?
 // Do they have the ability to read other user's conversations?
 if (!message_current_user_is_involved($user1, $user2) && !has_capability('moodle/site:readallmessages', $systemcontext)) {
     print_error('accessdenied','admin');
 }
-
 if (substr($viewing, 0, 7) == MESSAGE_VIEW_COURSE) {
     $courseid = intval(substr($viewing, 7));
     require_login($courseid);
@@ -135,7 +140,6 @@ if (!empty($user1->id) && $user1->id != $USER->id) {
 if (!empty($user2->id) && $user2realuser && ($user2->id != $USER->id)) {
     $PAGE->navigation->extend_for_user($user2);
 }
-
 /// Process any contact maintenance requests there may be
 if ($addcontact and confirm_sesskey()) {
     add_to_log(SITEID, 'message', 'add contact', 'index.php?user1='.$addcontact.'&amp;user2='.$USER->id, $addcontact);
@@ -173,11 +177,23 @@ if ($currentuser && !empty($user2) && has_capability('moodle/site:sendmessage', 
     }
 
     if (empty($messageerror)) {
-        $mform = new send_form();
-        $defaultmessage = new stdClass;
-        $defaultmessage->id = $user2->id;
-        $defaultmessage->viewing = $viewing;
-        $defaultmessage->message = '';
+    	$messages = message_get_history($user1, $user2, $messagelimit, $viewingnewmessages);
+    	if( $messages[sizeof( $messages)-1] ->useridfrom === $user2->id) 
+    	{
+    		$mform = new reply_form();
+    		$defaultmessage = new stdClass;
+    		$defaultmessage->id = $user2->id;
+    		$defaultmessage->viewing = $viewing;
+    		$defaultmessage->message = '';
+    	}
+    	else
+    	{
+    		$mform = new send_form();
+    		$defaultmessage = new stdClass;
+    		$defaultmessage->id = $user2->id;
+    		$defaultmessage->viewing = $viewing;
+    		$defaultmessage->message = '';
+    	}
 
         //Check if the current user has sent a message
         $data = $mform->get_data();
@@ -245,62 +261,10 @@ list($onlinecontacts, $offlinecontacts, $strangers) = message_get_contacts($user
 message_print_contact_selector($countunreadtotal, $viewing, $user1, $user2, $blockedusers, $onlinecontacts, $offlinecontacts, $strangers, $showactionlinks, $page);
 
 echo html_writer::start_tag('div', array('class' => 'messagearea mdl-align'));
-    if (!empty($user2)) {
-
-        echo html_writer::start_tag('div', array('class' => 'mdl-left messagehistory'));
-
-            $visible = 'visible';
-            $hidden = 'hiddenelement'; //cant just use hidden as mform adds that class to its fieldset for something else
-
-            $recentlinkclass = $recentlabelclass = $historylinkclass = $historylabelclass = $visible;
-            if ($history == MESSAGE_HISTORY_ALL) {
-                $displaycount = 0;
-
-                $recentlabelclass = $historylinkclass = $hidden;
-            } else if($viewingnewmessages) {
-                //if user is viewing new messages only show them the new messages
-                $displaycount = $countunread;
-
-                $recentlabelclass = $historylabelclass = $hidden;
-            } else {
-                //default to only showing the last few messages
-                $displaycount = MESSAGE_SHORTVIEW_LIMIT;
-
-                if ($countunread>MESSAGE_SHORTVIEW_LIMIT) {
-                    $displaycount = $countunread;
-                }
-
-                $recentlinkclass = $historylabelclass = $hidden;
-            }
-
-            $messagehistorylink =  html_writer::start_tag('div', array('class' => 'mdl-align messagehistorytype'));
-                $messagehistorylink .= html_writer::link($PAGE->url->out(false).'&history='.MESSAGE_HISTORY_ALL,
-                    get_string('messagehistoryfull','message'),
-                    array('class' => $historylinkclass));
-
-                $messagehistorylink .=  html_writer::start_tag('span', array('class' => $historylabelclass));
-                    $messagehistorylink .= get_string('messagehistoryfull','message');
-                $messagehistorylink .= html_writer::end_tag('span');
-
-                $messagehistorylink .= '&nbsp;|&nbsp;'.html_writer::link($PAGE->url->out(false).'&history='.MESSAGE_HISTORY_SHORT,
-                    get_string('mostrecent','message'),
-                    array('class' => $recentlinkclass));
-
-                $messagehistorylink .=  html_writer::start_tag('span', array('class' => $recentlabelclass));
-                    $messagehistorylink .= get_string('mostrecent','message');
-                $messagehistorylink .= html_writer::end_tag('span');
-
-                if ($viewingnewmessages) {
-                    $messagehistorylink .=  '&nbsp;|&nbsp;'.html_writer::start_tag('span');//, array('class' => $historyclass)
-                        $messagehistorylink .= get_string('unreadnewmessages','message',$displaycount);
-                    $messagehistorylink .= html_writer::end_tag('span');
-                }
-
-            $messagehistorylink .= html_writer::end_tag('div');
-
-            message_print_message_history($user1, $user2, $search, $displaycount, $messagehistorylink, $viewingnewmessages, $showactionlinks);
-        echo html_writer::end_tag('div');
-
+if (!empty($user2)) 
+{
+	$messagesheading=get_string('messagesbetween', 'message'). fullname($user1).' and '.  fullname($user2);
+	echo $OUTPUT->heading($messagesheading);
         //send message form
         if ($currentuser && has_capability('moodle/site:sendmessage', $systemcontext) && $user2realuser) {
             echo html_writer::start_tag('div', array('class' => 'mdl-align messagesend'));
@@ -317,17 +281,94 @@ echo html_writer::start_tag('div', array('class' => 'messagearea mdl-align'));
                             echo html_writer::tag('span', $msg, array('id' => 'messagewarning'));
                         }
                     }
-
+                    $messages = message_get_history($user1, $user2, $messagelimit, $viewingnewmessages);
+                    if( $messages[sizeof( $messages)-1] ->useridfrom === $user2->id)            
+                    {
+                    $mformreply = new reply_form();
+                    $defaultmessage1 = new stdClass;
+                    $defaultmessage1->id = $user2->id;
+                    $defaultmessage1->viewing = $viewing;
+                    $defaultmessage1->message = '';
+                    $defaultmessage1->messageformat = FORMAT_MOODLE;
+                    $mformreply->set_data($defaultmessage1);
+                    $mformreply->display();
+                    }
+                    else
+                    {   	
                     $mform = new send_form();
                     $defaultmessage = new stdClass;
                     $defaultmessage->id = $user2->id;
                     $defaultmessage->viewing = $viewing;
                     $defaultmessage->message = '';
-                    //$defaultmessage->messageformat = FORMAT_MOODLE;
+                    $defaultmessage->messageformat = FORMAT_MOODLE;
                     $mform->set_data($defaultmessage);
                     $mform->display();
+                    }
                 }
+                echo html_writer::start_tag('div', array('class' => 'mdl-left messagehistory'));
+                
+                $visible = 'visible';
+                $hidden = 'hiddenelement'; //cant just use hidden as mform adds that class to its fieldset for something else
+                
+                $recentlinkclass = $recentlabelclass = $historylinkclass = $historylabelclass = $visible;
+                if ($history == MESSAGE_HISTORY_ALL)
+                {
+                	$displaycount = 0;
+                
+                	$recentlabelclass = $historylinkclass = $hidden;
+                }
+                else if($viewingnewmessages)
+                {
+                	//if user is viewing new messages only show them the new messages
+                	$displaycount = $countunread;
+                
+                	$recentlabelclass = $historylabelclass = $hidden;
+                }
+                else
+                {
+                	//default to only showing the last few messages
+                	$displaycount = MESSAGE_SHORTVIEW_LIMIT;
+                
+                	if ($countunread>MESSAGE_SHORTVIEW_LIMIT)
+                	{
+                		$displaycount = $countunread;
+                	}
+                
+                	$recentlinkclass = $historylabelclass = $hidden;
+                }
+                
+                $messagehistorylink =  html_writer::start_tag('div', array('class' => 'mdl-align messagehistorytype'));
+                $messagehistorylink .= html_writer::link($PAGE->url->out(false).'&history='.MESSAGE_HISTORY_ALL,
+                		get_string('messagehistoryfull','message'),
+                		array('class' => $historylinkclass));
+                
+                $messagehistorylink .=  html_writer::start_tag('span', array('class' => $historylabelclass));
+                $messagehistorylink .= get_string('messagehistoryfull','message');
+                $messagehistorylink .= html_writer::end_tag('span');
+                
+                $messagehistorylink .= '&nbsp;|&nbsp;'.html_writer::link($PAGE->url->out(false).'&history='.MESSAGE_HISTORY_SHORT,
+                		get_string('mostrecent','message'),
+                		array('class' => $recentlinkclass));
+                
+                $messagehistorylink .=  html_writer::start_tag('span', array('class' => $recentlabelclass));
+                $messagehistorylink .= get_string('mostrecent','message');
+                $messagehistorylink .= html_writer::end_tag('span');
+                
+                if ($viewingnewmessages)
+                {
+                	$messagehistorylink .=  '&nbsp;|&nbsp;'.html_writer::start_tag('span');//, array('class' => $historyclass)
+                	$messagehistorylink .= get_string('unreadnewmessages','message',$displaycount);
+                	$messagehistorylink .= html_writer::end_tag('span');
+                }
+                
+                $messagehistorylink .= html_writer::end_tag('div');
+                
+                message_print_message_history($user1, $user2, $search, $displaycount, $messagehistorylink, $viewingnewmessages, $showactionlinks);
+                
+              
+                echo html_writer::end_tag('div');
             echo html_writer::end_tag('div');
+            
         }
     } else if ($viewing == MESSAGE_VIEW_SEARCH) {
         message_print_search($advancedsearch, $user1);

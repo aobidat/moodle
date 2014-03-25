@@ -24,6 +24,7 @@
 
 $string['activityoverview'] = 'You have assignments that need attention';
 $string['addsubmission'] = 'Add submission';
+$string['addnewsubmission_help'] = 'Press Add submission button to start editing your submission';
 $string['addattempt'] = 'Allow another attempt';
 $string['addnewattempt'] = 'Add a new attempt';
 $string['addnewattempt_help'] = 'This will create a new blank submission for you to work on.';
@@ -135,6 +136,7 @@ $string['editattemptfeedback'] = 'Edit the grade and feedback for attempt number
 $string['editingpreviousfeedbackwarning'] = 'You are editing the feedback for a previous attempt. This is attempt {$a->attemptnumber} out of {$a->totalattempts}.';
 $string['editsubmission'] = 'Edit submission';
 $string['editsubmission_help'] = 'Make changes to your submission';
+$string['editprevioussubmission_help'] = 'Press Edit submission button to make changes to your submission';
 $string['editingstatus'] = 'Editing status';
 $string['editaction'] = 'Actions...';
 $string['event_assessable_submitted'] = 'A submission has been submitted.';

@@ -162,7 +162,9 @@ $string['filesnotgenerated'] = 'Not all files were generated: {$a}';
 $string['filtername'] = 'Database auto-linking';
 $string['footer'] = 'Footer';
 $string['forcelinkname'] = 'Forced name for the link';
+$string['foundmorethanonerecord'] = '{$a->num} records were found. Total number of records in the database is:{$a->max} (<a href="{$a->reseturl}">Reset search terms</a>)';
 $string['foundnorecords'] = 'No records found (<a href="{$a->reseturl}">Reset filters</a>)';
+$string['foundonerecord'] = '{$a->num} record was found. Total number of records in the database is:{$a->max} (<a href="{$a->reseturl}">Reset search terms</a>)';
 $string['foundrecords'] = 'Found records: {$a->num}/{$a->max} (<a href="{$a->reseturl}">Reset filters</a>)';
 $string['fromfile'] = 'Import from zip file';
 $string['fromfile_help'] = 'The import from zip file feature allows you to browse for and upload a preset zip of templates and fields.';
@@ -300,6 +302,7 @@ $string['requiredentriestoview'] = 'Entries required before viewing';
 $string['requiredentriestoview_help'] = 'The number of entries a student is required to submit before they can view entries from other students.
 
 Note: If entries are required before viewing, the database auto-linking filter should be disabled. This is because the database auto-linking filter can\'t determine whether a user has submitted the required number of entries.';
+$string['resetsearchterms'] = 'Reset Search Terms';
 $string['resetsettings'] = 'Reset filters';
 $string['resettemplate'] = 'Reset template';
 $string['resizingimages'] = 'Resizing image thumbnails...';
@@ -316,6 +319,7 @@ $string['savesettings'] = 'Save settings';
 $string['savesuccess'] = 'Saved successfully. Your preset will now be available across the site.';
 $string['savetemplate'] = 'Save template';
 $string['search'] = 'Search';
+$string['searchfor'] = 'Search for';
 $string['selectedrequired'] = 'All selected required';
 $string['showall'] = 'Show all entries';
 $string['single'] = 'View single';

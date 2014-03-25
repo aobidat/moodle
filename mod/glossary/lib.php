@@ -1838,15 +1838,7 @@ function glossary_print_export_menu($cm, $glossary, $mode, $hook, $sortkey='', $
  */
 function glossary_print_alphabet_menu($cm, $glossary, $mode, $hook, $sortkey='', $sortorder = '') {
     if ( $mode != 'date' ) {
-        if ($glossary->showalphabet) {
-            echo '<div class="glossaryexplain">' . get_string("explainalphabet","glossary") . '</div><br />';
-        }
-
-        glossary_print_special_links($cm, $glossary, $mode, $hook);
-
         glossary_print_alphabet_links($cm, $glossary, $mode, $hook, $sortkey, $sortorder);
-
-        glossary_print_all_links($cm, $glossary, $mode, $hook);
     } else {
         glossary_print_sorting_links($cm, $mode, $sortkey,$sortorder);
     }
@@ -1860,12 +1852,8 @@ function glossary_print_alphabet_menu($cm, $glossary, $mode, $hook, $sortkey='',
  * @param string $sortorder
  */
 function glossary_print_author_menu($cm, $glossary,$mode, $hook, $sortkey = '', $sortorder = '') {
-    if ($glossary->showalphabet) {
-        echo '<div class="glossaryexplain">' . get_string("explainalphabet","glossary") . '</div><br />';
-    }
 
     glossary_print_alphabet_links($cm, $glossary, $mode, $hook, $sortkey, $sortorder);
-    glossary_print_all_links($cm, $glossary, $mode, $hook);
     glossary_print_sorting_links($cm, $mode, $sortkey,$sortorder);
 }
 
@@ -1999,18 +1987,37 @@ global $CFG;
  * @param string $sortorder
  */
 function glossary_print_alphabet_links($cm, $glossary, $mode, $hook, $sortkey, $sortorder) {
-global $CFG;
-     if ( $glossary->showalphabet) {
-          $alphabet = explode(",", get_string('alphabet', 'langconfig'));
-          for ($i = 0; $i < count($alphabet); $i++) {
-              if ( $hook == $alphabet[$i] and $hook) {
-                   echo "<b>$alphabet[$i]</b>";
-              } else {
-                   echo "<a href=\"$CFG->wwwroot/mod/glossary/view.php?id=$cm->id&amp;mode=$mode&amp;hook=".urlencode($alphabet[$i])."&amp;sortkey=$sortkey&amp;sortorder=$sortorder\">$alphabet[$i]</a>";
-              }
-              echo ' | ';
-          }
-     }
+	global  $OUTPUT;
+	if ( $glossary->showalphabet) {
+	echo '<br>';
+	$baseurl = new moodle_url('/mod/glossary/view.php', array(
+			'id' => $cm->id,
+			'mode'=>$mode,
+			'hook'=>$hook,
+			'sortkey'=>$sortkey,
+			'sortorder'=>$sortorder));
+	$alpha  = explode(',', get_string('alphabet', 'langconfig'));
+	$alphalist=array();
+	if ( $glossary->showspecial) {
+		$alphalist['SPECIAL']='Special';
+			}
+	foreach ($alpha as $letter)
+	{
+		$alphalist[$letter] = $letter;
+	}
+	$isAll="array(''=>'All'";
+	$baseurl->remove_params('hook');
+	$alphaurl1 = new moodle_url($baseurl);
+	$select1 = new single_select($alphaurl1 , 'hook', $alphalist, $hook, array(''=>'All'));
+	echo '<table border="0" width="100%">';
+	echo '<tr>';
+	echo '<td align="center" style="width:20%">';
+	$select1->set_label(get_string("explainalphabet","glossary"));
+	echo $OUTPUT->render($select1);
+	echo '</td>';
+	echo '</tr>';
+	echo '</table>';
+	}
 }
 
 /**

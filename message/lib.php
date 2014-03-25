@@ -108,15 +108,22 @@ function message_print_contact_selector($countunreadtotal, $viewing, $user1, $us
 
     $strunreadmessages = null;
     if ($countunreadtotal>0) { //if there are unread messages
-        $strunreadmessages = get_string('unreadmessages','message', $countunreadtotal);
+       // $strunreadmessages = get_string('unreadmessages','message', $countunreadtotal);
+        if ($countunreadtotal>1) {
+        $strunreadmessages=  $countunreadtotal.get_string('morethanonemessage','message');
+        }
+        else
+        {
+        $strunreadmessages=  $countunreadtotal.get_string('oneunreadmessage','message');
+        }
     }
-
     message_print_usergroup_selector($viewing, $courses, $coursecontexts, $countunreadtotal, count($blockedusers), $strunreadmessages, $user1);
 
     if ($viewing == MESSAGE_VIEW_UNREAD_MESSAGES) {
         message_print_contacts($onlinecontacts, $offlinecontacts, $strangers, $PAGE->url, 1, $showactionlinks,$strunreadmessages, $user2);
-    } else if ($viewing == MESSAGE_VIEW_CONTACTS || $viewing == MESSAGE_VIEW_SEARCH || $viewing == MESSAGE_VIEW_RECENT_CONVERSATIONS || $viewing == MESSAGE_VIEW_RECENT_NOTIFICATIONS) {
-        message_print_contacts($onlinecontacts, $offlinecontacts, $strangers, $PAGE->url, 0, $showactionlinks, $strunreadmessages, $user2);
+   // } else if ($viewing == MESSAGE_VIEW_CONTACTS || $viewing == MESSAGE_VIEW_SEARCH || $viewing == MESSAGE_VIEW_RECENT_CONVERSATIONS || $viewing == MESSAGE_VIEW_RECENT_NOTIFICATIONS) {
+    } else if ($viewing == MESSAGE_VIEW_CONTACTS ) {
+        message_print_contacts($onlinecontacts, $offlinecontacts, $strangers, $PAGE->url, 0, $showactionlinks, null, $user2);
     } else if ($viewing == MESSAGE_VIEW_BLOCKED) {
         message_print_blocked_users($blockedusers, $PAGE->url, $showactionlinks, null, $user2);
     } else if (substr($viewing, 0, 7) == MESSAGE_VIEW_COURSE) {
@@ -136,17 +143,21 @@ function message_print_contact_selector($countunreadtotal, $viewing, $user1, $us
     // Only show the search button if we're viewing our own messages.
     // Search isn't currently able to deal with user A wanting to search user B's messages.
     if ($showactionlinks) {
-        echo html_writer::start_tag('form', array('action' => 'index.php','method' => 'GET'));
-        echo html_writer::start_tag('fieldset');
+        //echo html_writer::start_tag('form', array('action' => 'index.php','method' => 'GET'));
+        //echo html_writer::start_tag('fieldset');
         $managebuttonclass = 'visible';
         if ($viewing == MESSAGE_VIEW_SEARCH) {
             $managebuttonclass = 'hiddenelement';
         }
-        $strmanagecontacts = get_string('search','message');
-        echo html_writer::empty_tag('input', array('type' => 'hidden','name' => 'viewing','value' => MESSAGE_VIEW_SEARCH));
-        echo html_writer::empty_tag('input', array('type' => 'submit','value' => $strmanagecontacts,'class' => $managebuttonclass));
-        echo html_writer::end_tag('fieldset');
-        echo html_writer::end_tag('form');
+        //$strmanagecontacts = get_string('search','message');
+        $strmanagecontacts="Search people and messages";
+        //echo html_writer::empty_tag('input', array('type' => 'hidden','name' => 'viewing','value' => MESSAGE_VIEW_SEARCH));
+        //echo html_writer::empty_tag('input', array('type' => 'submit','value' => $strmanagecontacts,'class' => $managebuttonclass));
+        //echo html_writer::end_tag('fieldset');
+        //echo html_writer::end_tag('form');
+                if ($viewing != MESSAGE_VIEW_SEARCH) {
+        echo '<a href="index.php?viewing=search">'.$strmanagecontacts.'</a> ';
+                }
     }
 
     echo html_writer::end_tag('div');
@@ -284,11 +295,19 @@ function message_print_blocked_users($blockedusers, $contactselecturl=null, $sho
         echo html_writer::tag('td', $titletodisplay, array('colspan' => 3, 'class' => 'heading'));
         echo html_writer::end_tag('tr');
     }
-
+    if ($countblocked>1) {
+         $blockedtitle=get_string('morethanoneblockedusers','message');
+    }
+    else
+    {
+        $blockedtitle=get_string('oneblockeduser','message');
+    }
     if ($countblocked) {
+       $messageblocked=  get_string('youhave', 'message').$countblocked. $blockedtitle;
         echo html_writer::start_tag('tr');
-        echo html_writer::tag('td', get_string('blockedusers', 'message', $countblocked), array('colspan' => 3, 'class' => 'heading'));
-        echo html_writer::end_tag('tr');
+       // echo html_writer::tag('td', get_string('blockedusers', 'message', $countblocked), array('colspan' => 3, 'class' => 'heading'));
+       echo html_writer::tag('td',$messageblocked , array('colspan' => 3, 'class' => 'heading'));
+       echo html_writer::end_tag('tr');
 
         $isuserblocked = true;
         $isusercontact = false;
@@ -414,7 +433,7 @@ function message_print_contacts($onlinecontacts, $offlinecontacts, $strangers, $
     $countstrangers       = count($strangers);
     $isuserblocked = null;
 
-    if ($countonlinecontacts + $countofflinecontacts == 0) {
+    if (($countonlinecontacts + $countofflinecontacts == 0) && empty($titletodisplay)) {
         echo html_writer::tag('div', get_string('contactlistempty', 'message'), array('class' => 'heading'));
     }
 
@@ -428,9 +447,15 @@ function message_print_contacts($onlinecontacts, $offlinecontacts, $strangers, $
         // Print out list of online contacts.
 
         if (empty($titletodisplay)) {
-            message_print_heading(get_string('onlinecontacts', 'message', $countonlinecontacts));
-        }
-
+             if ($countonlinecontacts>1)
+                  {
+            message_print_heading(get_string('morethanoneonlinecontact', 'message'),$countonlinecontacts);
+                }
+               else
+            {
+           message_print_heading(get_string('oneonlinecontact','message'),$countonlinecontacts);
+                }
+                }
         $isuserblocked = false;
         $isusercontact = true;
         foreach ($onlinecontacts as $contact) {
@@ -444,7 +469,14 @@ function message_print_contacts($onlinecontacts, $offlinecontacts, $strangers, $
         // Print out list of offline contacts.
 
         if (empty($titletodisplay)) {
-            message_print_heading(get_string('offlinecontacts', 'message', $countofflinecontacts));
+              if ( $countofflinecontacts>1)
+                    {
+            message_print_heading(get_string('morethanoneofflinecontact', 'message'), $countofflinecontacts);
+                    }
+            else
+                {
+            message_print_heading(get_string('oneofflinecontact','message'), $countofflinecontacts);
+                  }
         }
 
         $isuserblocked = false;
@@ -459,8 +491,14 @@ function message_print_contacts($onlinecontacts, $offlinecontacts, $strangers, $
 
     // Print out list of incoming contacts.
     if ($countstrangers) {
-        message_print_heading(get_string('incomingcontacts', 'message', $countstrangers));
-
+           if  (empty($titletodisplay)) {
+           if ($countstrangers>1){
+	  message_print_heading(get_string('morethanoneincomingcontact','message'), $countstrangers);
+                   }
+         else
+               {
+	  message_print_heading(get_string('oneincomingcontact','message'), $countstrangers);
+}}
         $isuserblocked = false;
         $isusercontact = false;
         foreach ($strangers as $stranger) {
@@ -534,7 +572,9 @@ function message_print_usergroup_selector($viewing, $courses, $coursecontexts, $
         echo html_writer::empty_tag('input', array('type' => 'hidden','name' => 'user1','value' => $user1->id));
     }
     echo html_writer::label(get_string('messagenavigation', 'message'), 'viewing');
-    echo html_writer::select($options, 'viewing', $viewing, false, array('id' => 'viewing','onchange' => 'this.form.submit()'));
+   // echo html_writer::select($options, 'viewing', $viewing, false, array('id' => 'viewing','onchange' => 'this.form.submit()'));
+    echo html_writer::select($options, 'viewing', $viewing, false, array('id' => 'viewing'));
+    echo html_writer::empty_tag('input', array('type'=>'submit','class' => 'inline', 'value'=>get_string('go')));
     echo html_writer::end_tag('fieldset');
     echo html_writer::end_tag('form');
 }
@@ -1356,7 +1396,6 @@ function message_print_user ($user=false, $iscontact=false, $isblocked=false, $i
     global $USER, $OUTPUT;
 
     $userpictureparams = array('size' => 20, 'courseid' => SITEID);
-
     if ($user === false) {
         echo $OUTPUT->user_picture($USER, $userpictureparams);
     } else if (core_user::is_real_user($user->id)) { // If not real user, then don't show any links.
@@ -1397,7 +1436,7 @@ function message_print_user ($user=false, $iscontact=false, $isblocked=false, $i
  * @param bool $icon include a graphical icon?
  * @return string  if $return is true otherwise bool
  */
-function message_contact_link($userid, $linktype='add', $return=false, $script=null, $text=false, $icon=true) {
+function message_contact_link($contact,$userid, $linktype='add', $return=false, $script=null, $text=false, $icon=true) {
     global $OUTPUT, $PAGE;
 
     //hold onto the strings as we're probably creating a bunch of links
@@ -1423,7 +1462,19 @@ function message_contact_link($userid, $linktype='add', $return=false, $script=n
 
     $safestring = '';
     if (!empty($text)) {
-        $safestring = $safealttext;
+    	switch ($linktype) {
+    		case 'block':
+    			$safestring = s('Block '. fullname($contact));
+    			break;
+    		case 'unblock':
+    			$safestring = s('Unblock '. fullname($contact));
+    			break;
+    		case 'remove':
+    			$safestring = s('Remove '. fullname($contact). ' from contact list');
+    			break;
+    		case 'add':
+    			$safestring=s('Add '.fullname($contact).' to contact list');
+    	}
     }
 
     $img = '';
@@ -2226,13 +2277,12 @@ function message_print_contactlist_user($contact, $incontactlist = true, $isbloc
  */
 function message_get_contact_add_remove_link($incontactlist, $isblocked, $contact, $script=null, $text=false, $icon=true) {
     $strcontact = '';
-
     if($incontactlist){
-        $strcontact = message_contact_link($contact->id, 'remove', true, $script, $text, $icon);
+        $strcontact = message_contact_link($contact,$contact->id, 'remove', true, $script, $text, $icon);
     } else if ($isblocked) {
-        $strcontact = message_contact_link($contact->id, 'add', true, $script, $text, $icon);
+        $strcontact = message_contact_link($contact,$contact->id, 'add', true, $script, $text, $icon);
     } else{
-        $strcontact = message_contact_link($contact->id, 'add', true, $script, $text, $icon);
+        $strcontact = message_contact_link($contact,$contact->id, 'add', true, $script, $text, $icon);
     }
 
     return $strcontact;
@@ -2257,9 +2307,9 @@ function message_get_contact_block_link($incontactlist, $isblocked, $contact, $s
         //$strblock = '';
     } else*/
     if ($isblocked) {
-        $strblock   = '&nbsp;'.message_contact_link($contact->id, 'unblock', true, $script, $text, $icon);
+       $strblock   = '&nbsp;'.message_contact_link($contact,$contact->id, 'unblock', true, $script, $text, $icon);
     } else{
-        $strblock   = '&nbsp;'.message_contact_link($contact->id, 'block', true, $script, $text, $icon);
+        $strblock   = '&nbsp;'.message_contact_link($contact,$contact->id, 'block', true, $script, $text, $icon);
     }
 
     return $strblock;
@@ -2336,8 +2386,9 @@ function message_mark_message_read($message, $timeread, $messageworkingempty=fal
  * @param int $colspan
  * @return void
  */
-function message_print_heading($title, $colspan=3) {
+function message_print_heading($title, $count,$colspan=3) {
     echo html_writer::start_tag('tr');
+    $title=get_string('youhave', 'message').$count.$title;
     echo html_writer::tag('td', $title, array('colspan' => $colspan, 'class' => 'heading'));
     echo html_writer::end_tag('tr');
 }

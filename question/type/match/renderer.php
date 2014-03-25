@@ -45,7 +45,7 @@ class qtype_match_renderer extends qtype_with_combined_feedback_renderer {
 
         $result = '';
         $result .= html_writer::tag('div', $question->format_questiontext($qa),
-                array('class' => 'qtext'));
+                array('class' => 'qtext', 'tabindex'=>'0'));
 
         $result .= html_writer::start_tag('div', array('class' => 'ablock'));
         $result .= html_writer::start_tag('table', array('class' => 'answer'));
@@ -80,7 +80,7 @@ class qtype_match_renderer extends qtype_with_combined_feedback_renderer {
             }
 
             $result .= html_writer::tag('td',
-                    html_writer::label(get_string('answer', 'qtype_match', $i),
+                    html_writer::label( $question->stems[$stemid],
                             'menu' . $qa->get_qt_field_name('sub' . $key), false,
                             array('class' => 'accesshide')) .
                     html_writer::select($choices, $qa->get_qt_field_name('sub' . $key), $selected,

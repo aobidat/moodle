@@ -22,6 +22,8 @@
 
     $contextid    = optional_param('contextid', 0, PARAM_INT);                // one of this or
     $courseid     = optional_param('id', 0, PARAM_INT);                       // this are required
+    $sifirst= optional_param('sifirst','',PARAM_TEXT);
+    $silast= optional_param('silast','',PARAM_TEXT);
 
     $PAGE->set_url('/user/index.php', array(
             'page' => $page,
@@ -161,6 +163,8 @@
             'id' => $course->id,
             'perpage' => $perpage,
             'accesssince' => $accesssince,
+            'sifirst'=>$sifirst,
+            'silast'=>$silast,
             'search' => s($search)));
 
 /// setting up tags
@@ -188,6 +192,7 @@
         $accesssince = 0;
     }
 
+echo $OUTPUT->heading(get_string('filtersheading'));
 /// Print settings and things in a table across the top
     $controlstable = new html_table();
     $controlstable->attributes['class'] = 'controls';
@@ -262,7 +267,6 @@
         if (!empty($lastaccess0exists)) {
             $timeoptions[-1] = get_string('never');
         }
-
         if (count($timeoptions) > 1) {
             $select = new single_select($baseurl, 'accesssince', $timeoptions, $accesssince, null, 'timeoptions');
             $select->set_label(get_string('usersnoaccesssince'));
@@ -421,6 +425,7 @@
 
         $wheres[] = "u.id IN (SELECT userid FROM {role_assignments} WHERE roleid = :roleid AND contextid $relatedctxsql)";
         $params = array_merge($params, array('roleid' => $roleid), $relatedctxparams);
+
     }
 
     $from = implode("\n", $joins);
@@ -463,7 +468,7 @@
 
     $matchcount = $DB->count_records_sql("SELECT COUNT(u.id) $from $where", $params);
 
-    $table->initialbars(true);
+    $table->initialbars(false);
     $table->pagesize($perpage, $matchcount);
 
     // list of users at the current visible page - paging makes it relatively short
@@ -472,8 +477,17 @@
     /// If there are multiple Roles in the course, then show a drop down menu for switching
     if (count($rolenames) > 1) {
         echo '<div class="rolesform">';
-        echo '<label for="rolesform_jump">'.get_string('currentrole', 'role').'&nbsp;</label>';
-        echo $OUTPUT->single_select($rolenamesurl, 'roleid', $rolenames, $roleid, null, 'rolesform');
+        $rolestable = new html_table();
+        $rolestable->attributes['class'] = 'controls';
+        $rolestable->cellspacing = 0;
+        $rolestable->data[] = new html_table_row();
+        $cell1 = new html_table_cell();
+        $cell1->attributes['class'] = 'left';
+        $rolesselect=new single_select($rolenamesurl, 'roleid', $rolenames, $roleid, null, 'rolesform');
+        $rolesselect->set_label(get_string('currentrole', 'role'));
+        $cell1->text = $OUTPUT->render($rolesselect);
+        $rolestable->data[0]->cells[] = $cell1;
+        echo html_writer::table($rolestable);
         echo '</div>';
 
     } else if (count($rolenames) == 1) {
@@ -508,7 +522,21 @@
                     array('roleid' => $roleid, 'contextid' => $context->id));
             $heading .= $OUTPUT->action_icon($headingurl, new pix_icon('t/edit', get_string('edit')));
         }
+        echo '<div class="mdl-align">';
+        $searchtable = new html_table();
+        $searchtable->attributes['class'] = 'controls';
+        $searchtable->data[0] = new html_table_row();
+        $searchcell = new html_table_cell();
+        $searchform='';
+        $searchform.='<form action="index.php" class="searchform"><div><input type="hidden" name="id" value="'.$course->id.'" />';
+        $searchform.= '<label for="search">' . get_string('search', 'search') . ' </label>';
+        $searchform.= '<input type="text" id="search" name="search" value="'.s($search).'"/>&nbsp;<input type="submit" value="'.get_string('search').'" /></div></form>'."\n";
+        $searchcell ->text=  $searchform;
+        $searchtable->data[0]->cells[] = $searchcell;
+        echo html_writer::table($searchtable);
+        echo '</div>';
         echo $OUTPUT->heading($heading, 3);
+
     } else {
         if ($course->id != SITEID && has_capability('moodle/course:enrolreview', $context)) {
             $editlink = $OUTPUT->action_icon(new moodle_url('/enrol/users.php', array('id' => $course->id)),
@@ -516,6 +544,20 @@
         } else {
             $editlink = '';
         }
+        echo '<div class="mdl-align">';
+        $searchtable = new html_table();
+        $searchtable->attributes['class'] = 'controls';
+        $searchtable->data[0] = new html_table_row();
+        $searchcell = new html_table_cell();
+        $searchform='';
+        $searchform.='<form action="index.php" class="searchform"><div><input type="hidden" name="id" value="'.$course->id.'" />';
+        $searchform.= '<label for="search">' . get_string('search', 'search') . ' </label>';
+        $searchform.= '<input type="text" id="search" name="search" value="'.s($search).'"/>&nbsp;<input type="submit" value="'.get_string('search').'" /></div></form>'."\n";
+        $searchcell ->text=  $searchform;
+        $searchtable->data[0]->cells[] = $searchcell;
+        echo html_writer::table($searchtable);
+        echo '</div>';
+
         if ($course->id == SITEID and $roleid < 0) {
             $strallparticipants = get_string('allsiteusers', 'role');
         } else {
@@ -540,51 +582,43 @@
         if ($totalcount < 1) {
             echo $OUTPUT->heading(get_string('nothingtodisplay'));
         } else {
-            if ($totalcount > $perpage) {
 
                 $firstinitial = $table->get_initial_first();
                 $lastinitial  = $table->get_initial_last();
                 $strall = get_string('all');
                 $alpha  = explode(',', get_string('alphabet', 'langconfig'));
-
+                $alphalist=array();
+                foreach ($alpha as $letter)
+                {
+                       $alphalist[$letter] = $letter;
+                }
                 // Bar of first initials
-
-                echo '<div class="initialbar firstinitial">'.get_string('firstname').' : ';
-                if(!empty($firstinitial)) {
-                    echo '<a href="'.$baseurl->out().'&amp;sifirst=">'.$strall.'</a>';
-                } else {
-                    echo '<strong>'.$strall.'</strong>';
-                }
-                foreach ($alpha as $letter) {
-                    if ($letter == $firstinitial) {
-                        echo ' <strong>'.$letter.'</strong>';
-                    } else {
-                        echo ' <a href="'.$baseurl->out().'&amp;sifirst='.$letter.'">'.$letter.'</a>';
-                    }
-                }
-                echo '</div>';
-
-                // Bar of last initials
-
-                echo '<div class="initialbar lastinitial">'.get_string('lastname').' : ';
-                if(!empty($lastinitial)) {
-                    echo '<a href="'.$baseurl->out().'&amp;silast=">'.$strall.'</a>';
-                } else {
-                    echo '<strong>'.$strall.'</strong>';
-                }
-                foreach ($alpha as $letter) {
-                    if ($letter == $lastinitial) {
-                        echo ' <strong>'.$letter.'</strong>';
-                    } else {
-                        echo ' <a href="'.$baseurl->out().'&amp;silast='.$letter.'">'.$letter.'</a>';
-                    }
-                }
+                echo '<div class="initialbar firstinitial">';
+                $barstable = new html_table();
+                $barstable->attributes['class'] = 'controls';
+                $barstable->data[0] = new html_table_row();
+                $barstable->data[1] = new html_table_row();
+                $firstinitialcell = new html_table_cell();
+                $alphaurl1 = new moodle_url($baseurl);
+                $alphaurl1->remove_params('sifirst');
+                $select1 = new single_select($alphaurl1,'sifirst', $alphalist, $sifirst, array(''=>'All'), 'initialmenu');
+                $select1->set_label(get_string('firstname'));
+                $firstinitialcell->text=$OUTPUT->render($select1);
+                $barstable->data[0]->cells[] = $firstinitialcell;
+                $row2 = new html_table_row();
+                $lastinitialcell = new html_table_cell();
+                $alphaurl2 = new moodle_url($baseurl);
+                $alphaurl2->remove_params('silast');
+                $select2 = new single_select($alphaurl2,'silast',  $alphalist, $silast, array(''=>'All'), 'initialmenu');
+                $select2->set_label(get_string('lastname'));
+                $lastinitialcell->text=$OUTPUT->render($select2);
+                $barstable->data[1]->cells[] =$lastinitialcell;
+                echo html_writer::table($barstable);
                 echo '</div>';
 
                 $pagingbar = new paging_bar($matchcount, intval($table->get_page_start() / $perpage), $perpage, $baseurl);
                 $pagingbar->pagevar = 'spage';
                 echo $OUTPUT->render($pagingbar);
-            }
 
             if ($matchcount > 0) {
                 $usersprinted = array();
@@ -594,7 +628,7 @@
                     }
                     $usersprinted[] = $user->id; /// Add new user to the array of users printed
 
-                    context_helper::preload_from_record($user);
+                    context_instance_preload($user);
 
                     $context = context_course::instance($course->id);
                     $usercontext = context_user::instance($user->id);
@@ -682,7 +716,7 @@
                         $links[] = html_writer::link(new moodle_url('/course/user.php?id='. $course->id .'&user='. $user->id), get_string('activity'));
                     }
 
-                    if ($USER->id != $user->id && !\core\session\manager::is_loggedinas() && has_capability('moodle/user:loginas', $context) && !is_siteadmin($user->id)) {
+                    if ($USER->id != $user->id && !session_is_loggedinas() && has_capability('moodle/user:loginas', $context) && !is_siteadmin($user->id)) {
                         $links[] = html_writer::link(new moodle_url('/course/loginas.php?id='. $course->id .'&user='. $user->id .'&sesskey='. sesskey()), get_string('loginas'));
                     }
 
@@ -708,7 +742,34 @@
 
 
         if ($userlist)  {
-
+              $strall = get_string('all');
+              $alpha  = explode(',', get_string('alphabet', 'langconfig'));
+              $alphalist=array();
+              foreach ($alpha as $letter)
+               {
+                 $alphalist[$letter] = $letter;
+               }
+        echo '<div class="initialbar firstinitial">';
+        $barstable1 = new html_table();
+        $barstable1->attributes['class'] = 'controls';
+        $barstable1->data[0] = new html_table_row();
+        $barstable1->data[1] = new html_table_row();
+        $firstinitialcell1 = new html_table_cell();
+        $alphaurl3 = new moodle_url($baseurl);
+        $alphaurl3->remove_params('sifirst');
+        $select3 = new single_select($alphaurl3,'sifirst', $alphalist, $sifirst, array(''=>'All'), 'initialmenu');
+        $select3->set_label(get_string('firstname'));
+        $firstinitialcell1->text=$OUTPUT->render($select3);
+        $barstable1->data[0]->cells[] = $firstinitialcell1;
+        $lastinitialcell1 = new html_table_cell();
+        $alphaurl4 = new moodle_url($baseurl);
+        $alphaurl4->remove_params('silast');
+        $select4 = new single_select($alphaurl4,'silast',  $alphalist, $silast, array(''=>'All'), 'initialmenu');
+        $select4->set_label(get_string('lastname'));
+        $lastinitialcell1->text=$OUTPUT->render($select4);
+        $barstable1->data[1]->cells[] = $lastinitialcell1;
+        echo html_writer::table($barstable1);
+        echo '</div>';
             $usersprinted = array();
             foreach ($userlist as $user) {
                 if (in_array($user->id, $usersprinted)) { /// Prevent duplicates by r.hidden - MDL-13935
@@ -819,13 +880,6 @@
 
         $module = array('name'=>'core_user', 'fullpath'=>'/user/module.js');
         $PAGE->requires->js_init_call('M.core_user.init_participation', null, false, $module);
-    }
-
-    // Show a search box if all participants don't fit on a single screen
-    if ($totalcount > $perpage) {
-        echo '<form action="index.php" class="searchform"><div><input type="hidden" name="id" value="'.$course->id.'" />';
-        echo '<label for="search">' . get_string('search', 'search') . ' </label>';
-        echo '<input type="text" id="search" name="search" value="'.s($search).'" />&nbsp;<input type="submit" value="'.get_string('search').'" /></div></form>'."\n";
     }
 
     $perpageurl = clone($baseurl);

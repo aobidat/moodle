@@ -113,43 +113,6 @@ echo $OUTPUT->container_start(null, 'page-mod-chat-gui_basic');
 echo $OUTPUT->heading(format_string($course->shortname), 1);
 echo $OUTPUT->heading(format_string($chat->name), 2);
 
-echo $OUTPUT->heading(get_string('participants'), 3);
-
-echo $OUTPUT->box_start('generalbox', 'participants');
-echo '<ul>';
-foreach($chatusers as $chu) {
-    echo '<li class="clearfix">';
-    echo $OUTPUT->user_picture($chu, array('size'=>24, 'courseid'=>$course->id));
-    echo '<div class="userinfo">';
-    echo fullname($chu).' ';
-    if ($idle = time() - $chu->lastmessageping) {
-        echo '<span class="idle">'.$stridle.' '.format_time($idle).'</span>';
-    } else {
-        echo '<span class="idle" />';
-    }
-    echo '</div>';
-    echo '</li>';
-}
-echo '</ul>';
-echo $OUTPUT->box_end();
-echo '<div id="send">';
-echo '<form id="editing" method="post" action="index.php">';
-
-echo '<h2><label for="message">'.get_string('sendmessage', 'message').'</label></h2>';
-echo '<div>';
-echo '<input type="text" id="message" name="message" value="'.s($refreshedmessage, true).'" size="60" />';
-echo '</div><div>';
-echo '<input type="hidden" name="id" value="'.$id.'" />';
-echo '<input type="hidden" name="groupid" value="'.$groupid.'" />';
-echo '<input type="hidden" name="last" value="'.time().'" />';
-echo '<input type="hidden" name="sesskey" value="'.sesskey().'" />';
-echo '<input type="submit" value="'.get_string('submit').'" />&nbsp;';
-echo '<input type="submit" name="refresh" value="'.get_string('refresh').'" />';
-echo '<input type="checkbox" name="newonly" id="newonly" '.($newonly?'checked="checked" ':'').'/><label for="newonly">'.get_string('newonlymsg', 'message').'</label>';
-echo '</div>';
-echo '</form>';
-echo '</div>';
-
 echo '<div id="messages">';
 echo $OUTPUT->heading(get_string('messages', 'chat'), 3);
 
@@ -191,6 +154,52 @@ if (empty($allmessages)) {
     }
 }
 echo '</tbody></table>';
+echo '<form id="editing1" method="post" action="index.php">';
+echo '<div>';
+echo '<input type="hidden" name="id" value="'.$id.'" />';
+echo '<input type="hidden" name="groupid" value="'.$groupid.'" />';
+echo '<input type="hidden" name="last" value="'.time().'" />';
+echo '<input type="hidden" name="sesskey" value="'.sesskey().'" />';
+echo '<input type="submit" name="refresh" value="'.get_string('refreshtoview','chat').'" />';
+echo '<input type="checkbox" name="newonly" id="newonly" '.($newonly?'checked="checked" ':'').'/><label for="newonly">'.get_string('newonlymsg', 'message').'</label>';
 echo '</div>';
+echo '</form>';
+echo '</div>';
+
+echo '<div id="send">';
+echo '<form id="editing" method="post" action="index.php">';
+echo '<h3><label for="message">'.get_string('composemessage', 'chat').'</label></h3>';
+echo '<div>';
+echo '<input type="text" id="message" name="message" value="'.s($refreshedmessage, true).'" size="60" />';
+echo '</div><div>';
+echo '<input type="hidden" name="id" value="'.$id.'" />';
+echo '<input type="hidden" name="groupid" value="'.$groupid.'" />';
+echo '<input type="hidden" name="last" value="'.time().'" />';
+echo '<input type="hidden" name="sesskey" value="'.sesskey().'" />';
+echo '<input type="submit" value="'.get_string('send','chat').'" />&nbsp;';
+
+echo '</div>';
+echo '</form>';
+echo '</div>';
+
+echo $OUTPUT->heading(get_string('participants'), 3);
+
+echo $OUTPUT->box_start('generalbox', 'participants');
+echo '<ul>';
+foreach($chatusers as $chu) {
+	echo '<li class="clearfix">';
+	echo $OUTPUT->user_picture($chu, array('size'=>24, 'courseid'=>$course->id));
+	echo '<div class="userinfo">';
+	echo fullname($chu).' ';
+	if ($idle = time() - $chu->lastmessageping) {
+		echo '<span class="idle">'.$stridle.' '.format_time($idle).'</span>';
+	} else {
+		echo '<span class="idle" />';
+	}
+	echo '</div>';
+	echo '</li>';
+}
+echo '</ul>';
+echo $OUTPUT->box_end();
 echo $OUTPUT->container_end();
 echo $OUTPUT->footer();

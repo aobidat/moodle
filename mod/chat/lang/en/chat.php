@@ -116,6 +116,7 @@ $string['pastchats'] = 'Past chat sessions';
 $string['pluginadministration'] = 'Chat administration';
 $string['pluginname'] = 'Chat';
 $string['refreshroom'] = 'Refresh room';
+$string['refreshtoview'] = 'Refresh to view new messages';
 $string['refreshuserlist'] = 'Refresh user list';
 $string['removemessages'] = 'Remove all messages';
 $string['repeatdaily'] = 'At the same time every day';

@@ -50,7 +50,7 @@ echo $OUTPUT->doctype() ?>
     <link rel="shortcut icon" href="<?php echo $OUTPUT->pix_url('favicon', 'theme')?>" />
     <?php echo $OUTPUT->standard_head_html() ?>
 </head>
-<body id="<?php p($PAGE->bodyid) ?>" class="<?php p($PAGE->bodyclasses.' '.join(' ', $bodyclasses)) ?>">
+<body id="<?php p($PAGE->bodyid) ?>" onload =" <?php $PAGE->requires->js_init_call('M.util.focus_main_content', null, true)?>" class="<?php p($PAGE->bodyclasses.' '.join(' ', $bodyclasses)) ?>">
 <?php echo $OUTPUT->standard_top_of_body_html() ?>
 <div id="page">
 <?php if ($hasheading || $hasnavbar || !empty($courseheader)) { ?>

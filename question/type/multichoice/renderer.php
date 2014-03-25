@@ -124,7 +124,7 @@ abstract class qtype_multichoice_renderer_base extends qtype_with_combined_feedb
 
         $result = '';
         $result .= html_writer::tag('div', $question->format_questiontext($qa),
-                array('class' => 'qtext'));
+                array('class' => 'qtext', 'tabindex'=>'0'));
 
         $result .= html_writer::start_tag('div', array('class' => 'ablock'));
         $result .= html_writer::tag('div', $this->prompt(), array('class' => 'prompt'));

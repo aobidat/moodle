@@ -30,6 +30,7 @@ $string['enabled_help'] = 'If enabled, students are able to type rich text direc
 $string['event_assessable_uploaded'] = 'An online text has been uploaded.';
 $string['nosubmission'] = 'Nothing has been submitted for this assignment';
 $string['onlinetext'] = 'Online text';
+$string['onlinetext_help'] = 'Online text-Type your answer in the box below';
 $string['onlinetextfilename'] = 'onlinetext.html';
 $string['onlinetextsubmission'] = 'Allow online text submission';
 $string['pluginname'] = 'Online text submissions';

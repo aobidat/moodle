@@ -1522,7 +1522,7 @@ function data_print_preference_form($data, $perpage, $search, $sort='', $order='
         $advancedsearchclass = 'search_none';
     }
     echo '<div id="reg_search" class="' . $regsearchclass . '" >&nbsp;&nbsp;&nbsp;';
-    echo '<label for="pref_search">'.get_string('search').'</label> <input type="text" size="16" name="search" id= "pref_search" value="'.s($search).'" /></div>';
+    echo '<label for="pref_search">'.get_string('searchfor').'</label> <input type="text" size="16" name="search" id= "pref_search" value="'.s($search).'" /></div>';
     echo '&nbsp;&nbsp;&nbsp;<label for="pref_sortby">'.get_string('sortby').'</label> ';
     // foreach field, print the option
     echo '<select name="sort" id="pref_sortby">';
@@ -1579,7 +1579,7 @@ function data_print_preference_form($data, $perpage, $search, $sort='', $order='
     echo '&nbsp;<input type="hidden" name="advanced" value="0" />';
     echo '&nbsp;<input type="hidden" name="filter" value="1" />';
     echo '&nbsp;<input type="checkbox" id="advancedcheckbox" name="advanced" value="1" '.$checked.' onchange="showHideAdvSearch(this.checked);" /><label for="advancedcheckbox">'.get_string('advancedsearch', 'data').'</label>';
-    echo '&nbsp;<input type="submit" value="'.get_string('savesettings','data').'" />';
+    echo '&nbsp;<input type="submit" value="'.get_string('search').'" />';
 
     echo '<br />';
     echo '<div class="' . $advancedsearchclass . '" id="data_adv_form">';
@@ -1647,8 +1647,7 @@ function data_print_preference_form($data, $perpage, $search, $sort='', $order='
     echo format_text($newtext, FORMAT_HTML, $options);
     echo '</td></tr>';
 
-    echo '<tr><td colspan="4"><br/><input type="submit" value="'.get_string('savesettings','data').'" /><input type="submit" name="resetadv" value="'.get_string('resetsettings','data').'" /></td></tr>';
-    echo '</table>';
+    echo '<tr><td colspan="4"><br/><input type="submit" value="'.get_string('search').'" /><input type="submit" name="resetadv" value="'.get_string('resetsearchterms','data').'" /></td></tr>';    echo '</table>';
     echo '</div>';
     echo '</div>';
     echo '</form>';

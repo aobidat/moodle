@@ -104,12 +104,23 @@ class mod_forum_post_form extends moodleform {
             }
         }
 
-        $mform->addElement('text', 'subject', get_string('subject', 'forum'), 'size="48"');
+        if(!empty( $post->parent))
+        {
+        $mform->addElement('text', 'subject', get_string('replystitle', 'forum'));
         $mform->setType('subject', PARAM_TEXT);
         $mform->addRule('subject', get_string('required'), 'required', null, 'client');
         $mform->addRule('subject', get_string('maximumchars', '', 255), 'maxlength', 255, 'client');
 
-        $mform->addElement('editor', 'message', get_string('message', 'forum'), null, self::editor_options($modcontext, (empty($post->id) ? null : $post->id)));
+        $mform->addElement('editor', 'message', get_string('replysbody', 'forum'), null, self::editor_options($modcontext, (empty($post->id) ? null : $post->id)));
+        }
+        else
+        {
+        $mform->addElement('text', 'subject', get_string('topicstitle', 'forum'));
+        $mform->setType('subject', PARAM_TEXT);
+        $mform->addRule('subject', get_string('required'), 'required', null, 'client');
+        $mform->addRule('subject', get_string('maximumchars', '', 255), 'maxlength', 255, 'client');
+        $mform->addElement('editor', 'message', get_string('topicsbody', 'forum'), null, self::editor_options($modcontext, (empty($post->id) ? null : $post->id)));
+        }
         $mform->setType('message', PARAM_RAW);
         $mform->addRule('message', get_string('required'), 'required', null, 'client');
 

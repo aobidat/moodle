@@ -224,7 +224,7 @@ if (is_mnet_remote_user($user)) {
 }
 
 echo '<div class="userprofilebox clearfix"><div class="profilepicture">';
-echo $OUTPUT->user_picture($user, array('size'=>100));
+echo $OUTPUT->user_picture($user, array('size'=>120));
 echo '</div>';
 
 // Print the description
@@ -249,6 +249,17 @@ echo '</div>';
 // Print all the little details in a list
 
 echo html_writer::start_tag('dl', array('class'=>'list'));
+// Print messaging link if allowed
+if (isloggedin() && has_capability('moodle/site:sendmessage', $usercontext)
+    && !empty($CFG->messaging) && !isguestuser() && !isguestuser($user) && ($USER->id != $user->id)) {
+    $sendmessageurl = new moodle_url('/message/index.php', array('id' => $user->id));
+    if ($courseid) {
+        $sendmessageurl->param('viewing', MESSAGE_VIEW_COURSE. $courseid);
+    }
+    echo html_writer::tag('dt', get_string('messageselectadd'));
+    echo html_writer::tag('dd', html_writer::link($sendmessageurl, get_string('messageselectadd')));
+}
+
 // Show email if any of the following conditions match.
 // 1. User is viewing his own profile.
 // 2. Has allowed everyone to see email
@@ -349,17 +360,6 @@ if (!isset($hiddenfields['suspended'])) {
 }
 echo html_writer::end_tag('dl');
 echo "</div></div>"; // Closing desriptionbox and userprofilebox.
-// Print messaging link if allowed
-if (isloggedin() && has_capability('moodle/site:sendmessage', $usercontext)
-    && !empty($CFG->messaging) && !isguestuser() && !isguestuser($user) && ($USER->id != $user->id)) {
-    echo '<div class="messagebox">';
-    $sendmessageurl = new moodle_url('/message/index.php', array('id' => $user->id));
-    if ($courseid) {
-        $sendmessageurl->param('viewing', MESSAGE_VIEW_COURSE. $courseid);
-    }
-    echo html_writer::link($sendmessageurl, get_string('messageselectadd'));
-    echo '</div>';
-}
 
 if ($currentuser || has_capability('moodle/user:viewdetails', $usercontext) || has_coursecontact_role($id)) {
     echo '<div class="fullprofilelink">';

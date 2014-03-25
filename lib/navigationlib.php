@@ -2486,6 +2486,29 @@ class global_navigation extends navigation_node {
                     new pix_icon('i/badge', get_string('badgesview', 'badges')));
         }
 
+        $course = $this->page->course;
+        $coursecontext = context_course::instance($course->id);
+          // Add view grade report is permitted
+          $reportavailable = false;
+          if (has_capability('moodle/grade:viewall', $coursecontext)) {
+          $reportavailable = true;
+          } else if (!empty($course->showgrades)) {
+          $reports = core_component::get_plugin_list('gradereport');
+          if (is_array($reports) && count($reports)>0) {     // Get all installed reports
+          arsort($reports); // user is last, we want to test it first
+          foreach ($reports as $plugin => $plugindir) {
+          if (has_capability('gradereport/'.$plugin.':view', $coursecontext)) {
+		//stop when the first visible plugin is found
+		$reportavailable = true;
+		  break;
+}
+}
+}
+}
+        if ($reportavailable) {
+$url = new moodle_url('/grade/report/index.php', array('id'=>$course->id));
+$gradenode = $coursenode->add(get_string('grades'), $url, self::TYPE_SETTING, null, 'grades', new pix_icon('i/grades', ''));
+        }
         return true;
     }
     /**
@@ -3694,7 +3717,7 @@ class settings_navigation extends navigation_node {
         }
 
         // Add view grade report is permitted
-        $reportavailable = false;
+  /*      $reportavailable = false;
         if (has_capability('moodle/grade:viewall', $coursecontext)) {
             $reportavailable = true;
         } else if (!empty($course->showgrades)) {
@@ -3714,7 +3737,7 @@ class settings_navigation extends navigation_node {
             $url = new moodle_url('/grade/report/index.php', array('id'=>$course->id));
             $gradenode = $coursenode->add(get_string('grades'), $url, self::TYPE_SETTING, null, 'grades', new pix_icon('i/grades', ''));
         }
-
+*/
         //  Add outcome if permitted
         if (!empty($CFG->enableoutcomes) && has_capability('moodle/course:update', $coursecontext)) {
             $url = new moodle_url('/grade/edit/outcome/course.php', array('id'=>$course->id));

@@ -544,7 +544,7 @@ class core_renderer extends renderer_base {
         // This is an unfortunate hack. DO NO EVER add anything more here.
         // DO NOT add classes.
         // DO NOT add an id.
-        return '<div role="main">'.$this->unique_main_content_token.'</div>';
+        return '<div role="main" tabindex="-1">'.$this->unique_main_content_token.'</div>';
     }
 
     /**
@@ -1738,13 +1738,13 @@ class core_renderer extends renderer_base {
         $output .= html_writer::select($select->options, $select->name, $select->selected, $select->nothing, $select->attributes);
 
         $go = html_writer::empty_tag('input', array('type'=>'submit', 'value'=>get_string('go')));
-        $output .= html_writer::tag('noscript', html_writer::tag('div', $go), array('class' => 'inline'));
-
+      //  $output .= html_writer::tag('noscript', html_writer::tag('div', $go), array('class' => 'inline'));
+        $output .= $go;
         $nothing = empty($select->nothing) ? false : key($select->nothing);
-        $this->page->requires->yui_module('moodle-core-formautosubmit',
+      /*  $this->page->requires->yui_module('moodle-core-formautosubmit',
             'M.core.init_formautosubmit',
             array(array('selectid' => $select->attributes['id'], 'nothing' => $nothing))
-        );
+        );*/
 
         // then div wrapper for xhtml strictness
         $output = html_writer::tag('div', $output);
@@ -2614,7 +2614,7 @@ EOD;
      * @return string the HTML to output.
      */
     public function notification($message, $classes = 'notifyproblem') {
-        return html_writer::tag('div', clean_text($message), array('class' => renderer_base::prepare_classes($classes)));
+        return html_writer::tag('h3', clean_text($message), array('class' => renderer_base::prepare_classes($classes)));
     }
 
     /**

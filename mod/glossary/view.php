@@ -337,12 +337,6 @@ if ($showcommonelements ) {
     echo '<table class="boxaligncenter" width="70%" border="0">';
     echo '<tr><td align="center" class="glossarysearchbox">';
 
-    echo '<input type="submit" value="'.$strsearch.'" name="searchbutton" /> ';
-    if ($mode == 'search') {
-        echo '<input type="text" name="hook" size="20" value="'.s($hook).'" alt="'.$strsearch.'" /> ';
-    } else {
-        echo '<input type="text" name="hook" size="20" value="" alt="'.$strsearch.'" /> ';
-    }
     if ($fullsearch || $mode != 'search') {
         $fullsearchchecked = 'checked="checked"';
     } else {
@@ -352,6 +346,12 @@ if ($showcommonelements ) {
     echo '<input type="hidden" name="mode" value="search" />';
     echo '<input type="hidden" name="id" value="'.$cm->id.'" />';
     echo '<label for="fullsearch">'.$strsearchindefinition.'</label>';
+    if ($mode == 'search') {
+         echo '<input type="text" name="hook" size="20" value="'.s($hook).'" alt="'.$strsearch.'" /> ';
+    } else {
+         echo '<input type="text" name="hook" size="20" value="" alt="'.$strsearch.'" /> ';
+    }
+    echo '<input type="submit" value="'.$strsearch.'" name="searchbutton" /> ';
     echo '</td></tr></table>';
 
     echo '</form>';

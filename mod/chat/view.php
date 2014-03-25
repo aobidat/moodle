@@ -128,16 +128,16 @@ if (has_capability('mod/chat:chat', $context)) {
     }
 
     $params['id'] = $chat->id;
-    $chattarget = new moodle_url("/mod/chat/gui_$CFG->chat_method/index.php", $params);
-    echo '<p>';
-    echo $OUTPUT->action_link($chattarget, $strenterchat, new popup_action('click', $chattarget, "chat{$course->id}_{$chat->id}{$groupparam}", array('height' => 500, 'width' => 700)));
-    echo '</p>';
-
-    $params['id'] = $chat->id;
     $link = new moodle_url('/mod/chat/gui_basic/index.php', $params);
     $action = new popup_action('click', $link, "chat{$course->id}_{$chat->id}{$groupparam}", array('height' => 500, 'width' => 700));
     echo '<p>';
-    echo $OUTPUT->action_link($link, get_string('noframesjs', 'message'), $action, array('title'=>get_string('modulename', 'chat')));
+    echo $OUTPUT->action_link($link, get_string('assistivetechnology', 'message'), $action, array('title'=>get_string('modulename', 'chat')));
+    echo '</p>';
+    
+    $params['id'] = $chat->id;
+    $chattarget = new moodle_url("/mod/chat/gui_$CFG->chat_method/index.php", $params);
+    echo '<p>';
+    echo $OUTPUT->action_link($chattarget, $strenterchat, new popup_action('click', $chattarget, "chat{$course->id}_{$chat->id}{$groupparam}", array('height' => 500, 'width' => 700)));
     echo '</p>';
 
     if ($chat->studentlogs or has_capability('mod/chat:readlog', $context)) {

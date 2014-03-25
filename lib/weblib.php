@@ -1908,7 +1908,7 @@ function html_to_text($html, $width = 75, $dolinks = true) {
  * @return string The highlighted HTML.
  */
 function highlight($needle, $haystack, $matchcase = false,
-        $prefix = '<span class="highlight">', $suffix = '</span>') {
+		$prefix = '<h4 class="highlight">', $suffix = '</h4>') {
 
     // Quick bail-out in trivial cases.
     if (empty($needle) or empty($haystack)) {

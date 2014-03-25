@@ -40,6 +40,7 @@ $string['err_numeric'] = 'You must enter a number here.';
 $string['err_rangelength'] = 'You must enter between {$a->format[0]} and {$a->format[1]} characters here.';
 $string['err_required'] = 'You must supply a value here.';
 $string['general'] = 'General';
+$string['generalglossary'] = 'Your new glossary entry';
 $string['hideadvanced'] = 'Hide advanced';
 $string['hour'] = 'Hour';
 $string['minute'] = 'Minute';

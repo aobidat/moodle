@@ -146,7 +146,7 @@ class tinymce_texteditor extends texteditor {
             'theme_advanced_resizing_min_height' => 30,
             'min_height' => 30,
             'theme_advanced_toolbar_location' => "top",
-            'theme_advanced_statusbar_location' => "bottom",
+            'theme_advanced_statusbar_location' => "none",
             'language_load' => false, // We load all lang strings directly from Moodle.
             'langrev' => $langrev,
         );

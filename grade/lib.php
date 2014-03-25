@@ -499,8 +499,8 @@ function print_grade_plugin_selector($plugin_info, $active_type, $active_plugin,
 
     // finally print/return the popup form
     if ($count > 1) {
-        $select = new url_select($menu, $active, null, 'choosepluginreport');
-        $select->set_label(get_string('gradereport', 'grades'), array('class' => 'accesshide'));
+        $select = new url_select($menu, $active, null, 'choosepluginreport','Go');
+        $select->set_label(get_string('selectgradereport', 'grades'));
         if ($return) {
             return $OUTPUT->render($select);
         } else {

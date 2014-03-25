@@ -47,7 +47,7 @@ class mod_assign_submission_form extends moodleform {
 
         $assign->add_submission_form_elements($mform, $data);
 
-        $this->add_action_buttons(true, get_string('savechanges', 'assign'));
+        $this->add_action_buttons(true, null,false,true);
         if ($data) {
             $this->set_data($data);
         }

@@ -724,13 +724,6 @@ if ($showactivity) {
 
         } else { //  We have some records to print
 
-            if ($maxcount != $totalcount) {
-                $a = new stdClass();
-                $a->num = $totalcount;
-                $a->max = $maxcount;
-                $a->reseturl = "view.php?id=$cm->id&amp;mode=$mode&amp;search=&amp;advanced=0";
-                echo $OUTPUT->notification(get_string('foundrecords', 'data', $a), 'notifysuccess');
-            }
 
             if ($mode == 'single') { // Single template
                 $baseurl = 'view.php?d=' . $data->id . '&mode=single&';
@@ -787,6 +780,18 @@ if ($showactivity) {
                     echo $OUTPUT->notification(get_string('nolisttemplate','data'));
                     data_generate_default_template($data, 'listtemplate', 0, false, false);
                 }
+                data_print_preference_form($data, $perpage, $search, $sort, $order, $search_array, $advanced, $mode);
+                                if ($maxcount != $totalcount) {
+                                     $a = new stdClass();
+                                     $a->num = $totalcount;
+                                     $a->max = $maxcount;
+                                     $a->reseturl = "view.php?id=$cm->id&amp;mode=$mode&amp;search=&amp;advanced=0";
+                               if (($a->num)>1){
+                                    echo $OUTPUT->notification(get_string('foundmorethanonerecord', 'data', $a), 'notifysuccess');
+                                   }
+                                   else{
+                                   echo $OUTPUT->notification(get_string('foundonerecord', 'data', $a), 'notifysuccess');
+                       }}
                 echo $data->listtemplateheader;
                 data_print_template('listtemplate', $records, $data, $search, $page);
                 echo $data->listtemplatefooter;
@@ -823,8 +828,8 @@ if ($showactivity) {
     }
 
     //Advanced search form doesn't make sense for single (redirects list view)
-    if (($maxcount || $mode == 'asearch') && $mode != 'single') {
-        data_print_preference_form($data, $perpage, $search, $sort, $order, $search_array, $advanced, $mode);
+ if ($mode == 'asearch' && $mode != 'single') {
+ data_print_preference_form($data, $perpage, $search, $sort, $order, $search_array, $advanced, $mode);
     }
 }
 

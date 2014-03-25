@@ -543,6 +543,7 @@ $string['select'] = 'Select {$a}';
 $string['selectalloroneuser'] = 'Select all or one user';
 $string['selectauser'] = 'Select a user';
 $string['selectdestination'] = 'Select destination of {$a}';
+$string['selectgradereport'] = 'Select grade report';
 $string['separator'] = 'Separator';
 $string['sepcolon'] = 'Colon';
 $string['sepcomma'] = 'Comma';

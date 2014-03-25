@@ -277,6 +277,7 @@ $string['sortchronogically'] = 'Sort chronologically';
 $string['special'] = 'Special';
 $string['standardview'] = 'Browse by alphabet';
 $string['studentcanpost'] = 'Students can add entries';
+$string['term'] = 'Term';
 $string['totalentries'] = 'Total entries';
 $string['usedynalink'] = 'Automatically link glossary entries';
 $string['usedynalink_help'] = 'If site-wide glossary auto-linking has been enabled by an administrator and this setting is enabled, the "Add a new entry" form includes the option to automatically link the entry wherever the concept words and phrases appear throughout the rest of the course.';

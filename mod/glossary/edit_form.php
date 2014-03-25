@@ -24,9 +24,9 @@ class mod_glossary_entry_form extends moodleform {
             'context' => $context);
 
 //-------------------------------------------------------------------------------
-        $mform->addElement('header', 'general', get_string('general', 'form'));
+        $mform->addElement('header', 'general', get_string('generalglossary', 'form'));
 
-        $mform->addElement('text', 'concept', get_string('concept', 'glossary'));
+        $mform->addElement('text', 'concept', get_string('term', 'glossary'));
         $mform->setType('concept', PARAM_TEXT);
         $mform->addRule('concept', null, 'required', null, 'client');
 
@@ -84,7 +84,7 @@ class mod_glossary_entry_form extends moodleform {
         $mform->setType('cmid', PARAM_INT);
 
 //-------------------------------------------------------------------------------
-        $this->add_action_buttons();
+        $this->add_action_buttons($cancel = true, $submitlabel=null, $isitglossary=true);
 
 //-------------------------------------------------------------------------------
         $this->set_data($currententry);

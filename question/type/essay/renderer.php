@@ -69,7 +69,7 @@ class qtype_essay_renderer extends qtype_renderer {
 
         $result = '';
         $result .= html_writer::tag('div', $question->format_questiontext($qa),
-                array('class' => 'qtext'));
+                array('class' => 'qtext', 'tabindex'=>'0'));
 
         $result .= html_writer::start_tag('div', array('class' => 'ablock'));
         $result .= html_writer::tag('div', $answer, array('class' => 'answer'));

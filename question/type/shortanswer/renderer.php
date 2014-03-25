@@ -81,7 +81,7 @@ class qtype_shortanswer_renderer extends qtype_renderer {
                     strpos($questiontext, $placeholder), strlen($placeholder));
         }
 
-        $result = html_writer::tag('div', $questiontext, array('class' => 'qtext'));
+        $result = html_writer::tag('div', $questiontext, array('class' => 'qtext','tabindex'=>'0'));
 
         if (!$placeholder) {
             $result .= html_writer::start_tag('div', array('class' => 'ablock'));

@@ -181,7 +181,7 @@ class core_files_renderer extends plugin_renderer_base {
         global $OUTPUT;
         $options = $fm->options;
         $client_id = $options->client_id;
-        $straddfile  = get_string('addfile', 'repository');
+        $straddfile  = get_string('addattachmentfile', 'repository');
         $strmakedir  = get_string('makeafolder', 'moodle');
         $strdownload = get_string('downloadfolder', 'repository');
         $strloading  = get_string('loading', 'repository');

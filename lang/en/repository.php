@@ -27,6 +27,7 @@ $string['accessiblefilepicker'] = 'Accessible file picker';
 $string['activaterep'] = 'Active repositories';
 $string['activerepository'] = 'Available repository plugins';
 $string['add'] = 'Add';
+$string['addattachmentfile'] = 'Add attachment';
 $string['addfile'] = 'Add...';
 $string['addplugin'] = 'Add a repository plugin';
 $string['allowexternallinks'] = 'Allow external links';

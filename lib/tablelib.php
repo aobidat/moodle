@@ -868,7 +868,7 @@ class flexible_table {
      * This function is not part of the public api.
      */
     function print_initials_bar() {
-        if ((!empty($this->sess->i_last) || !empty($this->sess->i_first) ||$this->use_initials)
+        if ((!empty($this->sess->i_last) || !empty($this->sess->i_first)) && $this->use_initials
                     && isset($this->columns['fullname'])) {
 
             $alpha  = explode(',', get_string('alphabet', 'langconfig'));
